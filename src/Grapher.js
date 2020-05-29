@@ -18,6 +18,7 @@ function Grapher(props) {
         </div>)
         ;
 
+    var course_dept = searchTerm.dept;
     var course_name = searchTerm.course_name;
     var course_nbr = searchTerm.course_nbr;
     var course_prof = searchTerm.prof;
@@ -44,6 +45,8 @@ function Grapher(props) {
                 </XYPlot>
             </div>
             <div style={{ textAlign: 'center' }}>
+                <h4>{course_dept} {course_nbr}: {course_name}</h4>
+                <p>{course_prof}</p>
                 <br />
                 <br />
                 <br />
