@@ -1,6 +1,6 @@
 ## [Demo](https://aiddun.github.io/enzyme)
 
-A much, much faster grade distribution viewer for UT Austin, using React, a much faster search index (ElasticLunr), and caching.
+A much, much faster grade distribution viewer for UT Austin, using React, a much faster precomputed search index (ElasticLunr), and caching.
 
 This is a prototype, and is not yet a finished product
 
