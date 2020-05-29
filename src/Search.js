@@ -8,7 +8,7 @@ import { useTheme, makeStyles } from '@material-ui/core/styles';
 import { VariableSizeList } from 'react-window';
 import { Typography } from '@material-ui/core';
 import elasticlunr from 'elasticlunr';
-const indexjson =  require('./idx.json');
+const indexjson =  require('./data/index.json');
 
 
 const LISTBOX_PADDING = 8; // px
@@ -94,16 +94,21 @@ const useStyles = makeStyles({
 console.time('load')
 const idx = elasticlunr.Index.load(indexjson)
 
-function foo(query){
-    
-    return idx.search(query, { expand: true})
-        .map(({ ref, score }) => idx.documentStore.getDoc(ref).course_name)
+function searchIndex(query){
+    return idx.search(query, {
+                                bool: "AND", 
+                                expand: true,
+                                // fields: {
+                                //   course_name: {boost: 2},
+                                // }
+                              }).map((entry) => idx.documentStore.getDoc(entry.ref).course_name)
+        // .map(({ ref, score }) => idx.documentStore.getDoc(ref).course_name)
         // .filter((c) => c != null)
         // .map((c) => c.course_name)
 
 }
 
-const OPTIONS = foo().map((c) => c.course_name);
+// const OPTIONS = foo().map((c) => c.course_name);
 
 const renderGroup = params => [
   <ListSubheader key={params.key} component="div">
@@ -113,7 +118,7 @@ const renderGroup = params => [
 ];
 
 const filterOptions = (options, { inputValue }) =>
-    foo(inputValue);
+    searchIndex(inputValue);
 
 export default function Virtualize() {
   const classes = useStyles();
@@ -121,15 +126,14 @@ export default function Virtualize() {
   return (
     <Autocomplete
       id="virtualize-demo"
-      style={{ width: 300 }}
+      style={{ width: 500 }}
       disableListWrap
       disableOpenOnFocus
       classes={classes}
       ListboxComponent={ListboxComponent}
       renderGroup={renderGroup}
-      options={OPTIONS}
+      // options={OPTIONS}
       filterOptions={filterOptions} 
-    //   groupBy={option => option[0].toUpperCase()}
       renderInput={params => (
         <TextField {...params} variant="outlined" label="Search courses" fullWidth />
       )}
