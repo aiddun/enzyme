@@ -101,8 +101,8 @@ function searchIndex(query){
                                 // fields: {
                                 //   course_name: {boost: 2},
                                 // }
-                              }).map((entry) => idx.documentStore.getDoc(entry.ref).course_name)
-        // .map(({ ref, score }) => idx.documentStore.getDoc(ref).course_name)
+                              })
+        .map(({ ref, score }) => idx.documentStore.getDoc(ref))
         // .filter((c) => c != null)
         // .map((c) => c.course_name)
 
@@ -120,12 +120,12 @@ const renderGroup = params => [
 const filterOptions = (options, { inputValue }) =>
     searchIndex(inputValue);
 
-export default function Virtualize() {
+export default function VirtualizedSearch(props) {
   const classes = useStyles();
 
   return (
     <Autocomplete
-      id="virtualize-demo"
+      id="virtualizedSearch"
       style={{ width: 500 }}
       disableListWrap
       disableOpenOnFocus
@@ -137,7 +137,10 @@ export default function Virtualize() {
       renderInput={params => (
         <TextField {...params} variant="outlined" label="Search courses" fullWidth />
       )}
-      renderOption={option => <Typography noWrap>{option}</Typography>}
+      renderOption={option => <Typography noWrap>{option.course_name}</Typography>}
+      getOptionLabel= {(option) => option.course_name}
+      onChange = {(event, value) => {props.setSearchTerm(value)}}
+      value = {props.searchTerm}
     />
   );
 }
