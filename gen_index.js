@@ -1,13 +1,9 @@
-const Fuse = require('fuse.js')
+var FlexSearch = require("flexsearch");
 fs = require("fs");
-const jsonData = require("./grades.json");
+const documents = require("./grades.json");
+const { exit } = require("process");
 
-
-const options = {
-  keys: ["sem", "prof", "dept", "course_nbr", "course_name"],
-};
-
-const fields = [
+const gradeTypes = [
   "a1",
   "a2",
   "a3",
@@ -23,16 +19,33 @@ const fields = [
   "f",
 ];
 
-// Create the Fuse index
-const index = Fuse.createIndex(options.keys, jsonData)
-// initialize Fuse with the index
-const fuse = new Fuse(jsonData, options, index)
-
-// const result = fuse.search("data")
-// console.log(result)
-
-fs.writeFile('./src/data/gradeindex.json', JSON.stringify(index), function (err) {
-    if (err) throw err;
-    console.log('done');
-    console.log('created index with ' + jsonData.length + " entries")
+let index = new FlexSearch({
+  profile: "balance",
+  doc: {
+    id: "id",
+    // field: ["course_name"],
+    field: ["sem", "prof", "dept", "course_nbr", "course_name"],
+  },
 });
+
+documents.forEach((doc, i) => {
+  doc["id"] = i;
+  gradeTypes.forEach((e) => {
+    doc[e] = parseInt(doc[e]);
+  });
+});
+
+index.add(documents);
+
+const foo = index.search({ field: "course_name", query: "data" });
+console.log(foo);
+
+fs.writeFile(
+  "./src/data/gradeindex.json",
+  JSON.stringify(index.export()),
+  function (err) {
+    if (err) throw err;
+    console.log("done");
+    console.log("created index with " + documents.length + " entries");
+  }
+);
