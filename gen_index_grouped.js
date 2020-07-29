@@ -42,7 +42,7 @@ const tokenizeCourseNum = (s) => {
   const deptString = s.slice(0, firstIntIndex).replace(" ", "");
   const numString = s.slice(firstIntIndex);
 
-  const result =  [...getSubstrings(deptString), ...getSubstrings(numString)];
+  const result = [...getSubstrings(deptString), ...getSubstrings(numString)];
 };
 
 console.log(`tokenize test: ${tokenizeCourseNum("C S 429H")}`);
@@ -55,9 +55,8 @@ const index = new FlexSearch({
       course_name: {},
       sems: {},
       profs: {},
-      course_nbr: {
-        tokenize: tokenizeCourseNum,
-      },
+      course_nbr: {},
+      dept: { tokenize: (s) => getSubstrings(s.replace(" ", "")) },
       sections: {},
     },
   },
@@ -79,7 +78,8 @@ documents.forEach((doc, docid) => {
     aggClasses[doc.course_name] = {
       id: aggidcount,
       course_name,
-      course_nbr: `${dept} ${course_nbr}`,
+      course_nbr,
+      dept,
       sections: [doc],
       profs: new Set([prof]),
       sems: new Set([sem]),
@@ -113,7 +113,16 @@ console.log(aggDocs[0]);
 
 index.add(aggDocs);
 
-const foo = index.search({ field: "course_nbr", query: "CS" });
+const foo = index.search([
+  { field: "course_name", query: "adadf", bool: "or" },
+
+  { field: "course_name", query: "data", bool: "and" },
+  {
+    field: "course_name",
+    query: "dat",
+    bool: "or",
+  },
+]);
 console.log(`sample query: ${foo.length}`);
 
 // fs.writeFile(

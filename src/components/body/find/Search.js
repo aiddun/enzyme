@@ -1,69 +1,31 @@
 import React from "react";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import ListSubheader from "@material-ui/core/ListSubheader";
+import { TextField, InputAdornment, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
-import ListboxComponent from "./ListboxComponent";
+import SearchIcon from "@material-ui/icons/Search";
 
-const useStyles = makeStyles({
-  listbox: {
-    "& ul": {
-      padding: 0,
-      margin: 0,
-    },
-  },
-});
+export default function Search(props) {
+  // const classes = useStyles();
 
-// const OPTIONS = foo().map((c) => c.course_name);
-
-const renderGroup = (params) => [
-  <ListSubheader key={params.key} component="div">
-    {params.key}
-  </ListSubheader>,
-  params.children,
-];
-
-export default function VirtualizedSearch(props) {
-  const classes = useStyles();
-
-  const { index, searchTerm, setSearchTerm } = props;
-
-  const searchIndex = (term) => {
-    // Full text search
-    const matches = index.search(term);
-    return matches
-  };
-
-  const filterOptions = (options, { inputValue }) => searchIndex(inputValue);
+  const { searchTerm, setSearchTerm } = props;
 
   return (
-    <Autocomplete
-      id="virtualizedSearch"
-      style={{ width: "100%" }}
-      disableListWrap
-      classes={classes}
-      ListboxComponent={ListboxComponent}
-      renderGroup={renderGroup}
-      options={[]}
-      filterOptions={filterOptions}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label="Search courses"
-          fullWidth
-        />
-      )}
-      renderOption={(option) => (
-        <Typography noWrap>{option.course_name}</Typography>
-      )}
-      getOptionLabel={(option) => option.course_name}
-      onChange={(event, value) => {
-        setSearchTerm(value);
+    <TextField
+      // classes={classes}
+      fullWidth
+      margin="normal"
+      onChange={(event) => {
+        setSearchTerm(event.target.value);
       }}
       value={searchTerm}
-      noOptionsText={""}
+      variant="outlined"
+      label="Search"
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <SearchIcon />
+          </InputAdornment>
+        ),
+      }}
     />
   );
 }

@@ -1,22 +1,24 @@
 import React from "react";
 
-import { Grid } from "@material-ui/core";
-import Grapher from "./compare/Grapher";
-import Find from "./find/Find"
-import CompareGrid from "./compare/CompareGrid"
+import { Grid, Divider } from "@material-ui/core";
+import Find from "./find/Find";
+import Compare from "./compare/Compare";
 
 const Body = (props) => {
-  const { index, searchTerm, setSearchTerm } = props;
-  const [compareCourses, setCompareCourses] = React.useState([]);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const { index } = props;
 
   return (
-    <Grid container spacing={3}>
+    <Grid container style={{ height: "100%" }}>
       <Grid item xs={6}>
-        <Find {...{ index, searchTerm, setSearchTerm }}/>
+        <Find
+          index={index}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
       </Grid>
       <Grid item xs={6}>
-        <CompareGrid/>
-        <Grapher {...{ searchTerm, setSearchTerm }} />
+        <Compare index={index} searchTerm={searchTerm} />
       </Grid>
     </Grid>
   );

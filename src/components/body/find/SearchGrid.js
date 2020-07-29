@@ -4,8 +4,11 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
+import { intersection } from "lodash";
+
 const SearchGrid = (props) => {
-  const { index } = props;
+  const { searchTerm, index } = props;
+  let localSearchTerm = searchTerm;
 
   const columnDefs = [
     {
@@ -13,7 +16,15 @@ const SearchGrid = (props) => {
       field: "course_name",
       filter: true,
       floatingFilter: true,
-      dndSource: true
+      dndSource: true,
+      width: 400,
+    },
+    {
+      headerName: "Dept",
+      field: "dept",
+      filter: true,
+      floatingFilter: true,
+      width: 100,
     },
     {
       headerName: "Course #",
@@ -24,40 +35,71 @@ const SearchGrid = (props) => {
       menuTabs: [],
     },
     {
+      headerName: "Professor",
+      field: "profs",
+      filter: true,
+      floatingFilter: true,
+      // cellRenderer: 'colonSeperatedRenderer'
+    },
+    {
       headerName: "Semester",
       field: "sems",
       filter: true,
       floatingFilter: true,
     },
     {
-      headerName: "Professor",
-      field: "profs",
-      filter: true,
-      floatingFilter: true,
-    },
-    {
-      headerName: "Department",
-      field: "dept",
-      filter: true,
-      floatingFilter: true,
+      headerName: "global",
+      field: "global",
+      hide: true,
+      filter: false,
     },
   ];
 
-  // const rowData = [
-  //   { make: "Toyota", model: "Celica", price: 35000 },
-  //   { make: "Ford", model: "Mondeo", price: 32000 },
-  //   { make: "Porsche", model: "Boxterr", price: 72000 },
-  // ];
+  const gridRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const gridApi = gridRef.current.api;
+
+    let filterModel = gridApi.getFilterModel();
+    filterModel["global"] = {
+      filterType: "text",
+      type: "contains",
+      filter: searchTerm,
+    };
+
+    gridApi.setFilterModel(filterModel);
+  }, [searchTerm]);
 
   const onGridReady = (params) => {
     var dataSource = {
-      getRows: function (params) {
-        const filters = Object.entries(params.filterModel).map(([field, v]) => {
-          return { field, query: v.filter };
-        });
+      getRows: (params) => {
+        const { filterModel } = params;
 
-        const rows = index.search(filters);
-        params.successCallback(rows, rows.length);
+        const filters = Object.entries(filterModel)
+          .filter(([field, v]) => field !== "global")
+          .map(([field, v]) => {
+            return { field, query: v.filter, bool: "and" };
+          });
+
+        const globalFilterModel = filterModel["global"];
+
+        let results = [];
+
+        if (filters.length > 0 && globalFilterModel) {
+          const fieldResults = index.search(filters);
+          const globalResults = index.search(globalFilterModel.filter);
+
+          results = intersection(
+            fieldResults,
+            globalResults
+          );
+        } else if (globalFilterModel) {
+          results = index.search(globalFilterModel.filter);
+        } else {
+          results = index.search(filters);
+        }
+
+        params.successCallback(results, results.length);
       },
     };
 
@@ -67,9 +109,10 @@ const SearchGrid = (props) => {
   return (
     <div
       className="ag-theme-material"
-      style={{ height: "800px", width: "100%" }}
+      style={{ height: "50em", width: "100%" }}
     >
       <AgGridReact
+        ref={gridRef}
         columnDefs={columnDefs}
         // rowData={[]}
         rowModelType="infinite"
@@ -80,6 +123,7 @@ const SearchGrid = (props) => {
           filterParams: {
             debounceMs: 0,
           },
+          suppressMenu: true,
           menuTabs: [],
           floatingFilterComponentParams: { suppressFilterButton: true },
         }}

@@ -29,12 +29,11 @@ index.import(serializedIndex);
 serializedIndex = undefined;
 
 function App() {
-  const [searchTerm, setSearchTerm] = React.useState(null);
 
   return (
     <div className="App">
       <NavBar />
-      <Body {...{ index, searchTerm, setSearchTerm }} />
+      <Body index={index} />
     </div>
   );
 }
