@@ -3,8 +3,9 @@ import React from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-
 import { intersection } from "lodash";
+
+import ColonSeperatedRenderer from "./ColonSeperatedRenderer";
 
 const SearchGrid = (props) => {
   const { searchTerm, index } = props;
@@ -39,13 +40,57 @@ const SearchGrid = (props) => {
       field: "profs",
       filter: true,
       floatingFilter: true,
-      // cellRenderer: 'colonSeperatedRenderer'
+      cellRenderer: "colonSeperatedRenderer",
+      cellRendererParams: {
+        // Get only lastname(s)
+        textFormatter: (elements) => {
+          const splitElements = elements ? elements.split(";") : [];
+
+          const seasonLetterMap = {
+            Fall: "F",
+            Spring: "Sp",
+            Summer: "Su",
+          };
+
+          return splitElements.map((fullname) => fullname.split(",")[0]);
+        },
+      },
+      autoHeight: true,
     },
     {
       headerName: "Semester",
       field: "sems",
       filter: true,
       floatingFilter: true,
+      cellRenderer: "colonSeperatedRenderer",
+      cellRendererParams: {
+        textFormatter: (elements) => {
+          const splitElements = elements ? elements.split(";") : [];
+
+          const seasonLetterMap = {
+            Fall: "F",
+            Spring: "S",
+            Summer: "Su",
+          };
+
+          return splitElements.map((e) => {
+            const [season, year] = e.split(" ");
+
+            const seasonLetter = seasonLetterMap[season] || season;
+            const twoDigitYear = year.substring(2, 5);
+
+            return `${seasonLetter}${twoDigitYear}`;
+          });
+        },
+        colorGenerator: (element) => {
+          const firstNumIndex = element.search(/\d/);
+          const seasonPrefix = element.substring(0, firstNumIndex);
+
+          return (
+            { S: "#a5d6a7", Su: "#ffecb3", F: "#ffa726" }[seasonPrefix] || ""
+          );
+        },
+      },
     },
     {
       headerName: "global",
@@ -89,10 +134,7 @@ const SearchGrid = (props) => {
           const fieldResults = index.search(filters);
           const globalResults = index.search(globalFilterModel.filter);
 
-          results = intersection(
-            fieldResults,
-            globalResults
-          );
+          results = intersection(fieldResults, globalResults);
         } else if (globalFilterModel) {
           results = index.search(globalFilterModel.filter);
         } else {
@@ -114,9 +156,7 @@ const SearchGrid = (props) => {
       <AgGridReact
         ref={gridRef}
         columnDefs={columnDefs}
-        // rowData={[]}
         rowModelType="infinite"
-        // datasource={getRows}
         onGridReady={onGridReady}
         defaultColDef={{
           resizable: true,
@@ -126,6 +166,10 @@ const SearchGrid = (props) => {
           suppressMenu: true,
           menuTabs: [],
           floatingFilterComponentParams: { suppressFilterButton: true },
+        }}
+        rowHeight={55}
+        frameworkComponents={{
+          colonSeperatedRenderer: ColonSeperatedRenderer,
         }}
       />
     </div>
