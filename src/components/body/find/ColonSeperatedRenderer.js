@@ -47,14 +47,3 @@ export default class ColonSeperatedRenderer extends React.PureComponent {
     );
   }
 }
-
-// class ColonSeperatedRenderer extends React.PureComponent {
-//     const { formatter } = props;
-//     console.log(props)
-
-//     const value = props.getValue();
-//     console.log(value)
-//     console.log(elements)
-
-//     return <p></p>
-// }
