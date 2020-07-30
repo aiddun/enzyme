@@ -1,17 +1,5 @@
 import React from "react";
-import { Chip, makeStyles } from "@material-ui/core";
-
-const useStyles = makeStyles({
-  summer: {
-    colorPrimary: "#ff9500",
-  },
-  spring: {
-    colorPrimary: "#ff9500",
-  },
-  fall: {
-    colorPrimary: "#ff9500",
-  },
-});
+import { Chip } from "@material-ui/core";
 
 export default class ColonSeperatedRenderer extends React.PureComponent {
   constructor(props) {
@@ -40,7 +28,6 @@ export default class ColonSeperatedRenderer extends React.PureComponent {
               label={text}
               size="small"
               style={{ marginBottom: "2px", backgroundColor: color }}
-              // green: #a5d6a7
             />
           ))}
       </div>

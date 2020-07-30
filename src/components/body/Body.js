@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Grid, Divider } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import Find from "./find/Find";
 import Compare from "./compare/Compare";
 

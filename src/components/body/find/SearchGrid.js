@@ -9,7 +9,6 @@ import ColonSeperatedRenderer from "./ColonSeperatedRenderer";
 
 const SearchGrid = (props) => {
   const { searchTerm, index } = props;
-  let localSearchTerm = searchTerm;
 
   const columnDefs = [
     {
@@ -45,13 +44,6 @@ const SearchGrid = (props) => {
         // Get only lastname(s)
         textFormatter: (elements) => {
           const splitElements = elements ? elements.split(";") : [];
-
-          const seasonLetterMap = {
-            Fall: "F",
-            Spring: "Sp",
-            Summer: "Su",
-          };
-
           return splitElements.map((fullname) => fullname.split(",")[0]);
         },
       },
