@@ -1,4 +1,4 @@
-## [Demo](https://aiddun.github.io/enzyme)
+## [Demo](https://aiddun.github.io/enzyme) (WIP, looks better rn on most devices at 80% zoom)
 
 A much, much faster grade distribution viewer for UT Austin, using React, a much faster precomputed search index (Flexsearch), table virtualization, and caching.
 
